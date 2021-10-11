@@ -21,7 +21,7 @@ public class ArrayList implements List {
 
     @Override
     public void add(Object value) {
-        if (isExpantionNeeded()) {
+        if (isExpansionNeeded()) {
             expandArray();
         }
         array[size] = value;
@@ -31,7 +31,7 @@ public class ArrayList implements List {
     @Override
     public void add(Object value, int index) {
         isIndexValid(index);
-        if (isExpantionNeeded()) {
+        if (isExpansionNeeded()) {
             expandArray();
         }
         moveElementsForAdd(index);
@@ -105,7 +105,7 @@ public class ArrayList implements List {
         return -1;
     }
 
-    private boolean isExpantionNeeded() {
+    private boolean isExpansionNeeded() {
         return currentCapacity <= size;
     }
 
@@ -140,7 +140,7 @@ public class ArrayList implements List {
     }
 
     private void clearArray() {
-        Arrays.fill(array, 0, size - 1, null);
+        Arrays.fill(array, 0, size, null);
         size = 0;
     }
 }
