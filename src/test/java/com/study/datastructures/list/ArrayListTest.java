@@ -19,6 +19,7 @@ class ArrayListTest {
 
     private static final String ARRAY_FIELD_NAME = "array";
     private static final String SIZE_FIELD_NAME = "size";
+    private static final String CURRENT_CAPACITY_FIELD_NAME = "currentCapacity";
 
     private ArrayList arrayList;
 
@@ -226,9 +227,24 @@ class ArrayListTest {
     @Test
     void checkToString() {
         Object[] injectedArray = {1, 2, 3, 4, 5, 6};
-        injectArray(injectedArray,3);
+        injectArray(injectedArray, 3);
         var expectedString = Arrays.toString(Arrays.copyOf(injectedArray, 3));
         assertEquals(expectedString, arrayList.toString());
+    }
+
+    @Test
+    void expandArray() {
+        var initialArraySize = 100;
+        var valuesArray = new Object[150];
+        Arrays.fill(valuesArray, new Object());
+        var array = (Object[]) getPrivateField(arrayList, ARRAY_FIELD_NAME);
+        assertEquals(initialArraySize, array.length);
+        Arrays.stream(valuesArray).forEach(e -> arrayList.add(e));
+        var expectedArraySize = 200;
+        array = (Object[]) getPrivateField(arrayList, ARRAY_FIELD_NAME);
+        assertEquals(expectedArraySize, array.length);
+        var arrayCapacity = (int) getPrivateField(arrayList, CURRENT_CAPACITY_FIELD_NAME);
+        assertEquals(expectedArraySize, arrayCapacity);
     }
 
     private void injectArray(Object[] injectedArray) {
