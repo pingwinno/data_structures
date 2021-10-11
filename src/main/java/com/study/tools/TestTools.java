@@ -15,4 +15,16 @@ public class TestTools {
             throw new TestToolException("Can't get access to field: " + fieldName);
         }
     }
+
+    public static void setPrivateField(Object object, String fieldName, Object value) {
+        try {
+            Field privateStringField = object.getClass().getDeclaredField(fieldName);
+            privateStringField.setAccessible(true);
+            privateStringField.set(object, value);
+        } catch (NoSuchFieldException e) {
+            throw new TestToolException("No such field: " + fieldName);
+        } catch (IllegalAccessException e) {
+            throw new TestToolException("Can't get access to field: " + fieldName);
+        }
+    }
 }
