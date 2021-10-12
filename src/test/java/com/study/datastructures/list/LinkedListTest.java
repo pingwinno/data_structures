@@ -115,7 +115,7 @@ class LinkedListTest {
         linkedList.add(oldObject);
         assertEquals(oldObject, linkedList.get(0));
         var newObject = new Object();
-        linkedList.set(newObject, 0);
+        assertEquals(oldObject,  linkedList.set(newObject, 0));
         assertEquals(newObject, linkedList.get(0));
     }
 
