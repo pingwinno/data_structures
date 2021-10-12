@@ -7,7 +7,7 @@ import java.util.StringJoiner;
 public class ArrayList implements List {
 
     private static final int INITIAL_CAPACITY = 100;
-    private int currentCapacity = INITIAL_CAPACITY;
+    private int currentCapacity;
     private int size = 0;
     private Object[] array;
 
@@ -17,24 +17,25 @@ public class ArrayList implements List {
 
     public ArrayList(int size) {
         array = new Object[size];
+        currentCapacity = array.length;
     }
 
     @Override
     public void add(Object value) {
-        if (isExpansionNeeded()) {
-            expandArray();
-        }
-        array[size] = value;
-        size++;
+        add(value, size);
     }
 
     @Override
     public void add(Object value, int index) {
-        isIndexValid(index);
+        if (index > size) {
+            throw new IndexOutOfBoundsException("Can't add new element. Index: " + index + " is bigger than size: " + size);
+        }
         if (isExpansionNeeded()) {
             expandArray();
         }
-        moveElementsForAdd(index);
+        if (index < size) {
+            moveElementsForAdd(index);
+        }
         array[index] = value;
         size++;
     }
@@ -77,7 +78,7 @@ public class ArrayList implements List {
 
     @Override
     public boolean isEmpty() {
-        return size <= 0;
+        return size == 0;
     }
 
     @Override
@@ -117,7 +118,9 @@ public class ArrayList implements List {
     }
 
     private void moveElementsForAdd(int index) {
-        if (size - index >= 0) System.arraycopy(array, index + 1, array, index + 2, size - index);
+        if (size - index >= 0) {
+            System.arraycopy(array, index + 1, array, index + 2, size - index);
+        }
     }
 
     private void moveElementsForRemove(int index) {
