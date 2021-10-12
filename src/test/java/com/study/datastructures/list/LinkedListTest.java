@@ -184,4 +184,12 @@ class LinkedListTest {
         linkedList.add(new Object());
         assertEquals(expectedIndex, linkedList.lastIndexOf(expectedObject));
     }
+
+    @Test
+    void lastIndexOfWithOneElement() {
+        var expectedIndex = 0;
+        var expectedObject = new Object();
+        linkedList.add(expectedObject);
+        assertEquals(expectedIndex, linkedList.indexOf(expectedObject));
+    }
 }
