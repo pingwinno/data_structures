@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class HashMapTest {
 
-    HashMap hashMap;
+    HashMap<String, Integer> hashMap;
 
     @BeforeEach
     void init() {
