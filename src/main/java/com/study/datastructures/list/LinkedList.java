@@ -2,26 +2,26 @@ package com.study.datastructures.list;
 
 import java.util.Objects;
 
-public class LinkedList implements List {
+public class LinkedList<T> implements List<T> {
 
     private int size;
-    private Node head;
-    private Node tail;
+    private Node<T> head;
+    private Node<T> tail;
 
     public LinkedList() {
     }
 
     @Override
-    public void add(Object value) {
+    public void add(T value) {
         add(value, size);
     }
 
     @Override
-    public void add(Object value, int index) {
+    public void add(T value, int index) {
         if (index > size) {
             throw new IndexOutOfBoundsException("Can't add new element. Index: " + index + " is bigger than size: " + size);
         }
-        var newNode = new Node(value);
+        var newNode = new Node<>(value);
         if (size == 0) {
             head = newNode;
             tail = newNode;
@@ -43,7 +43,7 @@ public class LinkedList implements List {
     }
 
     @Override
-    public Object remove(int index) {
+    public T remove(int index) {
         isIndexValid(index);
         var node = getNodeByIndex(index);
         var nextNode = node.nextNode;
@@ -60,7 +60,7 @@ public class LinkedList implements List {
     }
 
     @Override
-    public Object get(int index) {
+    public T get(int index) {
         isIndexValid(index);
         if (index == 0) {
             return head.value;
@@ -69,7 +69,7 @@ public class LinkedList implements List {
     }
 
     @Override
-    public Object set(Object value, int index) {
+    public T set(T value, int index) {
         isIndexValid(index);
         var node = getNodeByIndex(index);
         var oldValue = node.value;
@@ -95,12 +95,12 @@ public class LinkedList implements List {
     }
 
     @Override
-    public boolean contains(Object value) {
+    public boolean contains(T value) {
         return indexOf(value) != -1;
     }
 
     @Override
-    public int indexOf(Object value) {
+    public int indexOf(T value) {
         var node = head;
         int currentIndex = 0;
         while (node != null) {
@@ -114,7 +114,7 @@ public class LinkedList implements List {
     }
 
     @Override
-    public int lastIndexOf(Object value) {
+    public int lastIndexOf(T value) {
         var node = tail;
         int currentIndex = size - 1;
         while (node != null) {
@@ -127,8 +127,8 @@ public class LinkedList implements List {
         return -1;
     }
 
-    private Node getNodeByIndex(int index) {
-        Node node = null;
+    private Node<T> getNodeByIndex(int index) {
+        Node<T> node = null;
         if (index <= size / 2) {
             node = head;
             int currentIndex = 0;
@@ -153,12 +153,12 @@ public class LinkedList implements List {
         }
     }
 
-    private static class Node {
-        private Node previousNode;
-        private Node nextNode;
-        private Object value;
+    private static class Node<T> {
+        private Node<T> previousNode;
+        private Node<T> nextNode;
+        private T value;
 
-        public Node(Object value) {
+        public Node(T value) {
             this.value = value;
         }
     }
