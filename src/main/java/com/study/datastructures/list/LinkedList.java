@@ -1,6 +1,7 @@
 package com.study.datastructures.list;
 
 import java.util.Objects;
+import java.util.StringJoiner;
 
 public class LinkedList implements List {
 
@@ -125,6 +126,17 @@ public class LinkedList implements List {
             currentIndex--;
         }
         return -1;
+    }
+
+    @Override
+    public String toString() {
+        StringJoiner stringJoiner = new StringJoiner(", ", "[", "]");
+        var node = head;
+        while (head != null) {
+            stringJoiner.add(String.valueOf(head.value));
+            head = head.nextNode;
+        }
+        return stringJoiner.toString();
     }
 
     private Node getNodeByIndex(int index) {

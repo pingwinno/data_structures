@@ -3,6 +3,8 @@ package com.study.datastructures.list;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -191,5 +193,15 @@ class LinkedListTest {
         var expectedObject = new Object();
         linkedList.add(expectedObject);
         assertEquals(expectedIndex, linkedList.indexOf(expectedObject));
+    }
+
+    @Test
+    void checkToString() {
+        Object[] injectedArray = {1, 2, 3, 4, 5, 6};
+        for (Object i : injectedArray) {
+            linkedList.add(i);
+        }
+        var expectedString = Arrays.toString(injectedArray);
+        assertEquals(expectedString, linkedList.toString());
     }
 }
