@@ -1,15 +1,15 @@
 package com.study.datastructures.list;
 
 // Abstract Data Type
-public interface List {
+public interface List<T> {
     // add value to the end of the list
-    void add(Object value);
+    void add(T value);
 
     // [A, B, C, null, null] size = 3
     // add (D, [0,1,2,3])
     // we can add value by index between [0, size]
     // otherwise throw new IndexOutOfBoundsException
-    void add(Object value, int index);
+    void add(T value, int index);
 
     // we can remove value by index between [0, size - 1]
     // otherwise throw new IndexOutOfBoundsException
@@ -25,7 +25,7 @@ public interface List {
 
     // we can set value by index between [0, size - 1]
     // otherwise throw new IndexOutOfBoundsException
-    Object set(Object value, int index);
+    Object set(T value, int index);
 
     void clear();
 
@@ -33,14 +33,14 @@ public interface List {
 
     boolean isEmpty();
 
-    boolean contains(Object value);
+    boolean contains(T value);
 
     // [A, B, A, C] indexOf(A) -> 0
     // -1 if not exist
-    int indexOf(Object value);
+    int indexOf(T value);
 
     // [A, B, A, C] lastIndexOf(A) -> 2
-    int lastIndexOf(Object value);
+    int lastIndexOf(T value);
 
     // [A, B, C]
     String toString();
