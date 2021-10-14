@@ -1,8 +1,10 @@
 package com.study.datastructures.list;
 
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
-public class LinkedList<T> implements List<T> {
+public class LinkedList<T> implements List<T>, Iterable<T> {
 
     private int size;
     private Node<T> head;
@@ -46,16 +48,7 @@ public class LinkedList<T> implements List<T> {
     public T remove(int index) {
         isIndexValid(index);
         var node = getNodeByIndex(index);
-        var nextNode = node.nextNode;
-        var previousNode = node.previousNode;
-        if (nextNode != null) {
-            nextNode.previousNode = previousNode;
-        }
-        if (previousNode != null) {
-            previousNode.nextNode = nextNode;
-        }
-        node.nextNode = node.previousNode = null;
-        size--;
+        removeNode(node);
         return node.value;
     }
 
@@ -127,6 +120,19 @@ public class LinkedList<T> implements List<T> {
         return -1;
     }
 
+    private void removeNode(Node<T> node) {
+        var nextNode = node.nextNode;
+        var previousNode = node.previousNode;
+        if (nextNode != null) {
+            nextNode.previousNode = previousNode;
+        }
+        if (previousNode != null) {
+            previousNode.nextNode = nextNode;
+        }
+        node.nextNode = node.previousNode = null;
+        size--;
+    }
+
     private Node<T> getNodeByIndex(int index) {
         Node<T> node = null;
         if (index <= size / 2) {
@@ -153,6 +159,11 @@ public class LinkedList<T> implements List<T> {
         }
     }
 
+    @Override
+    public Iterator<T> iterator() {
+        return new LinkedListIterator();
+    }
+
     private static class Node<T> {
         private Node<T> previousNode;
         private Node<T> nextNode;
@@ -160,6 +171,38 @@ public class LinkedList<T> implements List<T> {
 
         public Node(T value) {
             this.value = value;
+        }
+    }
+
+    private class LinkedListIterator implements Iterator<T> {
+
+        private Node<T> currentNode = head;
+        private Node<T> previousNode = null;
+        private boolean isNextInvoked = false;
+
+        @Override
+        public boolean hasNext() {
+            return currentNode != null;
+        }
+
+        @Override
+        public T next() {
+            if (hasNext()) {
+                isNextInvoked = true;
+                previousNode = currentNode;
+                currentNode = currentNode.nextNode;
+                return previousNode.value;
+            }
+            throw new NoSuchElementException();
+        }
+
+        @Override
+        public void remove() {
+            if (!isNextInvoked){
+                throw new IllegalStateException("Next hasn't been called on iterator yet");
+            }
+            removeNode(previousNode);
+            isNextInvoked = false;
         }
     }
 }
