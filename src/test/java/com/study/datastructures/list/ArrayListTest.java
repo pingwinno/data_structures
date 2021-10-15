@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.NoSuchElementException;
 
 import static com.study.tools.TestTools.getPrivateField;
 import static com.study.tools.TestTools.setPrivateField;
@@ -103,6 +104,21 @@ class ArrayListTest {
         assertEquals(expectedObject, removedObject);
         assertNull(array[targetIndex]);
         assertEquals(0, arraySize);
+    }
+
+    @Test
+    void removeFirstElementFromArrayWithTwoElement() {
+        Object[] injectedArray = {1, 2};
+        injectArray(injectedArray);
+        var firstExpectedObject = 1;
+        var secondExpectedObject = 2;
+        var targetIndex = 0;
+        var removedObject = arrayList.remove(targetIndex);
+        var array = (Object[]) getPrivateField(arrayList, ARRAY_FIELD_NAME);
+        var arraySize = (int) getPrivateField(arrayList, SIZE_FIELD_NAME);
+        assertEquals(firstExpectedObject, removedObject);
+        assertEquals(secondExpectedObject, array[targetIndex]);
+        assertEquals(1, arraySize);
     }
 
     @Test
@@ -245,6 +261,88 @@ class ArrayListTest {
         assertEquals(expectedArraySize, array.length);
         var arrayCapacity = (int) getPrivateField(arrayList, CURRENT_CAPACITY_FIELD_NAME);
         assertEquals(expectedArraySize, arrayCapacity);
+    }
+
+    @Test
+    void should_returnObjects_when_callNext() {
+        prepareListWithFiveElements();
+        var iterator = arrayList.iterator();
+        assertEquals(1, iterator.next());
+        assertEquals(2, iterator.next());
+        assertEquals(3, iterator.next());
+        assertEquals(4, iterator.next());
+        assertEquals(5, iterator.next());
+    }
+
+    @Test
+    void should_returnTrue_when_callHasNext() {
+        prepareListWithFiveElements();
+        var iterator = arrayList.iterator();
+        assertTrue(iterator.hasNext());
+        iterator.next();
+        assertTrue(iterator.hasNext());
+        iterator.next();
+        assertTrue(iterator.hasNext());
+        iterator.next();
+        assertTrue(iterator.hasNext());
+        iterator.next();
+        assertTrue(iterator.hasNext());
+    }
+
+    @Test
+    void should_returnFalse_when_callHasNextAfterLastElement() {
+        prepareListWithFiveElements();
+        var iterator = arrayList.iterator();
+        iterator.next();
+        iterator.next();
+        iterator.next();
+        iterator.next();
+        iterator.next();
+        assertFalse(iterator.hasNext());
+    }
+
+    @Test
+    void should_throwNoSuchElementException_when_callNextAfterLastElement() {
+        prepareListWithFiveElements();
+        var iterator = arrayList.iterator();
+        iterator.next();
+        iterator.next();
+        iterator.next();
+        iterator.next();
+        iterator.next();
+        assertThrows(NoSuchElementException.class, iterator::next);
+    }
+
+    @Test
+    void should_removeAllObjectsFromList_when_callRemove() {
+        prepareListWithFiveElements();
+        var iterator = arrayList.iterator();
+        assertEquals(1, iterator.next());
+        iterator.remove();
+        assertEquals(2, iterator.next());
+        iterator.remove();
+        assertEquals(3, iterator.next());
+        iterator.remove();
+        assertEquals(4, iterator.next());
+        iterator.remove();
+        assertEquals(5, iterator.next());
+        iterator.remove();
+        assertEquals(0, arrayList.size());
+    }
+
+    @Test
+    void should_throwIllegalStateException_when_callRemoveBeforeNext() {
+        prepareListWithFiveElements();
+        var iterator = arrayList.iterator();
+        assertThrows(IllegalStateException.class, iterator::remove);
+    }
+
+    void prepareListWithFiveElements() {
+        arrayList.add(1);
+        arrayList.add(2);
+        arrayList.add(3);
+        arrayList.add(4);
+        arrayList.add(5);
     }
 
     private void injectArray(Object[] injectedArray) {

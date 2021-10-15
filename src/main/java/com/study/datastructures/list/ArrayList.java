@@ -1,32 +1,34 @@
 package com.study.datastructures.list;
 
 import java.util.Arrays;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-public class ArrayList implements List {
+public class ArrayList<T> implements List<T>, Iterable<T> {
 
     private static final int INITIAL_CAPACITY = 100;
     private int currentCapacity;
     private int size = 0;
-    private Object[] array;
+    private T[] array;
 
     public ArrayList() {
         this(INITIAL_CAPACITY);
     }
 
     public ArrayList(int size) {
-        array = new Object[size];
+        array = (T[]) new Object[size];
         currentCapacity = array.length;
     }
 
     @Override
-    public void add(Object value) {
+    public void add(T value) {
         add(value, size);
     }
 
     @Override
-    public void add(Object value, int index) {
+    public void add(T value, int index) {
         if (index > size) {
             throw new IndexOutOfBoundsException("Can't add new element. Index: " + index + " is bigger than size: " + size);
         }
@@ -41,25 +43,25 @@ public class ArrayList implements List {
     }
 
     @Override
-    public Object remove(int index) {
+    public T remove(int index) {
         isIndexValid(index);
         var temp = array[index];
         array[index] = null;
-        if (index != 0) {
-            moveElementsForRemove(index);
-        }
+
+        moveElementsForRemove(index);
+
         size--;
         return temp;
     }
 
     @Override
-    public Object get(int index) {
+    public T get(int index) {
         isIndexValid(index);
         return array[index];
     }
 
     @Override
-    public Object set(Object value, int index) {
+    public T set(T value, int index) {
         isIndexValid(index);
         var temp = array[index];
         array[index] = value;
@@ -82,12 +84,12 @@ public class ArrayList implements List {
     }
 
     @Override
-    public boolean contains(Object value) {
+    public boolean contains(T value) {
         return indexOf(value) != -1;
     }
 
     @Override
-    public int indexOf(Object value) {
+    public int indexOf(T value) {
         for (int i = 0; i < size; i++) {
             if (Objects.equals(array[i], value)) {
                 return i;
@@ -97,7 +99,7 @@ public class ArrayList implements List {
     }
 
     @Override
-    public int lastIndexOf(Object value) {
+    public int lastIndexOf(T value) {
         for (int i = size; i > 0; i--) {
             if (Objects.equals(array[i], value)) {
                 return i;
@@ -111,7 +113,7 @@ public class ArrayList implements List {
     }
 
     private void expandArray() {
-        var newArray = new Object[currentCapacity = currentCapacity * 2];
+        var newArray = (T[]) new Object[currentCapacity = currentCapacity * 2];
         System.arraycopy(newArray, 0, array, 0, size);
         array = newArray;
 
@@ -124,7 +126,7 @@ public class ArrayList implements List {
     }
 
     private void moveElementsForRemove(int index) {
-        System.arraycopy(array, index, array, index - 1, size - index);
+        System.arraycopy(array, index + 1, array, index, size - index - 1);
     }
 
     private void isIndexValid(int index) {
@@ -145,5 +147,38 @@ public class ArrayList implements List {
     private void clearArray() {
         Arrays.fill(array, 0, size, null);
         size = 0;
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        return new ArrayListIterator();
+    }
+
+    private class ArrayListIterator implements Iterator<T> {
+        private int currentIndex = 0;
+        private boolean isNextInvoked = false;
+
+        @Override
+        public boolean hasNext() {
+            return currentIndex != size;
+        }
+
+        @Override
+        public T next() {
+            if (hasNext()) {
+                isNextInvoked = true;
+                return array[currentIndex++];
+            }
+            throw new NoSuchElementException();
+        }
+
+        @Override
+        public void remove() {
+            if (!isNextInvoked) {
+                throw new IllegalStateException("Next hasn't been called on iterator yet");
+            }
+            ArrayList.this.remove(--currentIndex);
+            isNextInvoked = false;
+        }
     }
 }
