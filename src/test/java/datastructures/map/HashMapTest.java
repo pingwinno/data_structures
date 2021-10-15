@@ -94,13 +94,22 @@ class HashMapTest {
     }
 
     @Test
-    void should_removeOnePair_when_putOnePair() {
+    void should_removeOnePair_when_callRemove() {
         var key = "1";
         var value = 1;
 
         hashMap.put(key, value);
 
         assertEquals(value, hashMap.remove(key));
+
+        assertNull(hashMap.get(key));
+    }
+
+    @Test
+    void should_returnNull_when_callRemove() {
+        var key = "1";
+
+        assertNull(hashMap.remove(key));
 
         assertNull(hashMap.get(key));
     }
