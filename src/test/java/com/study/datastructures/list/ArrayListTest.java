@@ -237,7 +237,7 @@ class ArrayListTest {
         injectArray(injectedArray);
         var targetElement = 2;
         var expectedIndex = 1;
-        assertEquals(expectedIndex, arrayList.indexOf(targetElement));
+        assertEquals(expectedIndex, arrayList.lastIndexOf(targetElement));
     }
 
     @Test

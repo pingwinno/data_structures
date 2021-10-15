@@ -100,7 +100,7 @@ public class ArrayList<T> implements List<T>, Iterable<T> {
 
     @Override
     public int lastIndexOf(T value) {
-        for (int i = size; i > 0; i--) {
+        for (int i = size - 1; i > 0; i--) {
             if (Objects.equals(array[i], value)) {
                 return i;
             }
