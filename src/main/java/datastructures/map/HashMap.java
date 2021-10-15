@@ -8,7 +8,7 @@ import java.util.Objects;
 public class HashMap<K, V> implements Map<K, V> {
 
     private static final int INITIAL_CAPACITY = 16;
-    private List[] buckets;
+    private final List<Entry<K, V>>[] buckets;
     private int size;
 
     public HashMap() {
@@ -16,12 +16,11 @@ public class HashMap<K, V> implements Map<K, V> {
     }
 
     public HashMap(int bucketsCapacity) {
-        buckets = new List[bucketsCapacity];
+        buckets = (List<Entry<K, V>>[]) new List[bucketsCapacity];
         for (int i = 0; i < buckets.length; i++) {
-            buckets[i] = new LinkedList();
+            buckets[i] = new LinkedList<>();
         }
     }
-
 
     @Override
     public V put(K key, V value) {
@@ -62,8 +61,8 @@ public class HashMap<K, V> implements Map<K, V> {
         var bucket = getBucketByKey(key);
         for (int i = 0; i < bucket.size(); i++) {
             var element = bucket.get(i);
-            if (Objects.equals(key, element)) {
-                return (Entry<K, V>) element;
+            if (Objects.equals(key, element.key)) {
+                return element;
             }
         }
         return null;
@@ -73,15 +72,15 @@ public class HashMap<K, V> implements Map<K, V> {
         var bucket = getBucketByKey(key);
         for (int i = 0; i < bucket.size(); i++) {
             var element = bucket.get(i);
-            if (Objects.equals(key, element)) {
+            if (Objects.equals(key, element.key)) {
                 size--;
-                return (Entry<K, V>) bucket.remove(i);
+                return bucket.remove(i);
             }
         }
         return null;
     }
 
-    private List getBucketByKey(K key) {
+    private List<Entry<K, V>> getBucketByKey(K key) {
         return buckets[(buckets.length - 1) % key.hashCode()];
     }
 
@@ -92,19 +91,6 @@ public class HashMap<K, V> implements Map<K, V> {
         public Entry(K key, V value) {
             this.key = key;
             this.value = value;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            Entry<?, ?> entry = (Entry<?, ?>) o;
-            return Objects.equals(key, entry.key);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(key);
         }
     }
 }

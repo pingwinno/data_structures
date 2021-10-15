@@ -13,7 +13,7 @@ class HashMapTest {
 
     @BeforeEach
     void init() {
-        hashMap = new HashMap();
+        hashMap = new HashMap<>();
     }
 
     @Test
