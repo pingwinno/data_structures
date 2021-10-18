@@ -1,4 +1,4 @@
-package datastructures.map;
+package com.study.datastructures.map;
 
 import com.study.datastructures.list.LinkedList;
 import com.study.datastructures.list.List;

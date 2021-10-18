@@ -129,6 +129,12 @@ public class LinkedList<T> implements List<T>, Iterable<T> {
         if (previousNode != null) {
             previousNode.nextNode = nextNode;
         }
+        if (node == head) {
+            head = nextNode;
+        }
+        if (node == tail) {
+            tail = previousNode;
+        }
         node.nextNode = node.previousNode = null;
         size--;
     }
@@ -198,7 +204,7 @@ public class LinkedList<T> implements List<T>, Iterable<T> {
 
         @Override
         public void remove() {
-            if (!isNextInvoked){
+            if (!isNextInvoked) {
                 throw new IllegalStateException("Next hasn't been called on iterator yet");
             }
             removeNode(previousNode);

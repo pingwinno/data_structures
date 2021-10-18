@@ -5,6 +5,22 @@ import org.junit.jupiter.api.Test;
 
 import java.util.NoSuchElementException;
 
+import static com.study.datastructures.tools.CollectionUtil.populateList;
+import static com.study.datastructures.tools.Constants.EXPECTED_INTEGER_1;
+import static com.study.datastructures.tools.Constants.EXPECTED_INTEGER_2;
+import static com.study.datastructures.tools.Constants.EXPECTED_INTEGER_20;
+import static com.study.datastructures.tools.Constants.EXPECTED_INTEGER_3;
+import static com.study.datastructures.tools.Constants.EXPECTED_INTEGER_4;
+import static com.study.datastructures.tools.Constants.EXPECTED_INTEGER_5;
+import static com.study.datastructures.tools.Constants.EXPECTED_SIZE_0;
+import static com.study.datastructures.tools.Constants.EXPECTED_SIZE_1;
+import static com.study.datastructures.tools.Constants.EXPECTED_SIZE_2;
+import static com.study.datastructures.tools.Constants.EXPECTED_SIZE_3;
+import static com.study.datastructures.tools.Constants.EXPECTED_SIZE_5;
+import static com.study.datastructures.tools.Constants.INDEX_0;
+import static com.study.datastructures.tools.Constants.INDEX_1;
+import static com.study.datastructures.tools.Constants.INDEX_2;
+import static com.study.datastructures.tools.Constants.INDEX_3;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -16,57 +32,43 @@ class LinkedListTest {
 
     @BeforeEach
     void init() {
-        linkedList = new LinkedList();
+        linkedList = new LinkedList<>();
     }
 
     @Test
     void addOneElement() {
-        var expectedObject = 1;
-        var expectedSize = 1;
-        linkedList.add(expectedObject);
-        assertEquals(expectedObject, linkedList.get(0));
-        assertEquals(expectedSize, linkedList.size());
+        populateList(EXPECTED_SIZE_1, linkedList);
+        assertEquals(EXPECTED_INTEGER_1, linkedList.get(INDEX_0));
+        assertEquals(EXPECTED_SIZE_1, linkedList.size());
     }
 
     @Test
     void addMultipleElements() {
-        var expectedSize = 2;
-        var firstExpectedObject = 1;
-        var secondExpectedObject = 2;
-        linkedList.add(firstExpectedObject);
-        linkedList.add(secondExpectedObject);
-        assertEquals(firstExpectedObject, linkedList.get(0));
-        assertEquals(secondExpectedObject, linkedList.get(1));
-        assertEquals(expectedSize, linkedList.size());
+        populateList(EXPECTED_SIZE_2, linkedList);
+        assertEquals(EXPECTED_INTEGER_1, linkedList.get(INDEX_0));
+        assertEquals(EXPECTED_INTEGER_2, linkedList.get(INDEX_1));
+        assertEquals(EXPECTED_SIZE_2, linkedList.size());
     }
 
     @Test
     void addMultipleElementsByIndexToListTail() {
-        var expectedSize = 2;
-        var firstExpectedObject = 1;
-        var secondExpectedObject = 2;
-        linkedList.add(firstExpectedObject);
-        linkedList.add(secondExpectedObject, 1);
-        assertEquals(firstExpectedObject, linkedList.get(0));
-        assertEquals(secondExpectedObject, linkedList.get(1));
-        assertEquals(expectedSize, linkedList.size());
+        populateList(EXPECTED_SIZE_1, linkedList);
+        linkedList.add(EXPECTED_INTEGER_2, INDEX_1);
+        assertEquals(EXPECTED_INTEGER_1, linkedList.get(INDEX_0));
+        assertEquals(EXPECTED_INTEGER_2, linkedList.get(INDEX_1));
+        assertEquals(EXPECTED_SIZE_2, linkedList.size());
     }
 
     @Test
     void addMultipleElementsByIndex() {
-        var expectedSize = 3;
-        var firstExpectedObject = 1;
-        var secondExpectedObject = 2;
-        linkedList.add(firstExpectedObject);
-        linkedList.add(secondExpectedObject);
-        assertEquals(firstExpectedObject, linkedList.get(0));
-        assertEquals(secondExpectedObject, linkedList.get(1));
-        var thirdExpectedObject = 3;
-        linkedList.add(thirdExpectedObject, 1);
-        assertEquals(firstExpectedObject, linkedList.get(0));
-        assertEquals(thirdExpectedObject, linkedList.get(1));
-        assertEquals(secondExpectedObject, linkedList.get(2));
-        assertEquals(expectedSize, linkedList.size());
+        populateList(EXPECTED_SIZE_2, linkedList);
+        assertEquals(EXPECTED_INTEGER_1, linkedList.get(INDEX_0));
+        assertEquals(EXPECTED_INTEGER_2, linkedList.get(INDEX_1));
+        linkedList.add(EXPECTED_SIZE_3, INDEX_1);
+        assertEquals(EXPECTED_INTEGER_1, linkedList.get(INDEX_0));
+        assertEquals(EXPECTED_SIZE_3, linkedList.get(INDEX_1));
+        assertEquals(EXPECTED_INTEGER_2, linkedList.get(INDEX_2));
+        assertEquals(EXPECTED_SIZE_3, linkedList.size());
     }
 
     @Test
@@ -76,63 +78,69 @@ class LinkedListTest {
 
     @Test
     void remove() {
-        var expectedSize = 0;
-        var expectedObject = 1;
-        linkedList.add(expectedObject);
-        assertEquals(expectedObject, linkedList.get(0));
-        assertEquals(expectedObject, linkedList.remove(0));
-        assertThrows(IndexOutOfBoundsException.class, () -> linkedList.get(0));
-        assertEquals(expectedSize, linkedList.size());
+        populateList(EXPECTED_SIZE_1, linkedList);
+        assertEquals(EXPECTED_INTEGER_1, linkedList.get(INDEX_0));
+        assertEquals(EXPECTED_INTEGER_1, linkedList.remove(INDEX_0));
+        assertThrows(IndexOutOfBoundsException.class, () -> linkedList.get(INDEX_0));
+        assertEquals(EXPECTED_SIZE_0, linkedList.size());
+    }
+
+    @Test
+    void removeHead() {
+        populateList(EXPECTED_SIZE_3, linkedList);
+        assertEquals(EXPECTED_INTEGER_1, linkedList.get(INDEX_0));
+        assertEquals(EXPECTED_INTEGER_1, linkedList.remove(INDEX_0));
+        assertEquals(EXPECTED_INTEGER_2, linkedList.get(INDEX_0));
+        assertEquals(EXPECTED_SIZE_2, linkedList.size());
+    }
+
+    @Test
+    void removeTail() {
+        populateList(EXPECTED_SIZE_3, linkedList);
+        assertEquals(EXPECTED_INTEGER_3, linkedList.get(INDEX_2));
+        assertEquals(EXPECTED_INTEGER_3, linkedList.remove(INDEX_2));
+        assertEquals(EXPECTED_INTEGER_2, linkedList.get(INDEX_1));
+        assertEquals(EXPECTED_SIZE_2, linkedList.size());
     }
 
     @Test
     void removeWithMultipleElements() {
-        var expectedSize = 2;
-        var firstExpectedObject = 1;
-        var secondExpectedObject = 2;
-        var thirdExpectedObject = 3;
-        linkedList.add(firstExpectedObject);
-        linkedList.add(secondExpectedObject);
-        linkedList.add(thirdExpectedObject);
-        assertEquals(secondExpectedObject, linkedList.get(1));
-        assertEquals(secondExpectedObject, linkedList.remove(1));
-        assertEquals(expectedSize, linkedList.size());
-        assertEquals(firstExpectedObject, linkedList.get(0));
-        assertEquals(thirdExpectedObject, linkedList.get(1));
+        populateList(EXPECTED_SIZE_3, linkedList);
+        assertEquals(EXPECTED_INTEGER_2, linkedList.get(EXPECTED_SIZE_1));
+        assertEquals(EXPECTED_INTEGER_2, linkedList.remove(EXPECTED_SIZE_1));
+        assertEquals(EXPECTED_SIZE_2, linkedList.size());
+        assertEquals(EXPECTED_INTEGER_1, linkedList.get(EXPECTED_SIZE_0));
+        assertEquals(EXPECTED_INTEGER_3, linkedList.get(EXPECTED_SIZE_1));
     }
 
     @Test
     void removeWithOutOutBoundsException() {
-        assertThrows(IndexOutOfBoundsException.class, () -> linkedList.remove(0));
+        assertThrows(IndexOutOfBoundsException.class, () -> linkedList.remove(INDEX_0));
     }
 
     @Test
     void getWithOutOutBoundsException() {
-        assertThrows(IndexOutOfBoundsException.class, () -> linkedList.get(0));
+        assertThrows(IndexOutOfBoundsException.class, () -> linkedList.get(INDEX_0));
     }
 
     @Test
     void set() {
-        var oldObject = 1;
+        var oldObject = EXPECTED_INTEGER_1;
         linkedList.add(oldObject);
-        assertEquals(oldObject, linkedList.get(0));
-        var newObject = 2;
-        linkedList.set(newObject, 0);
-        assertEquals(newObject, linkedList.get(0));
+        assertEquals(oldObject, linkedList.get(INDEX_0));
+        var newObject = EXPECTED_INTEGER_2;
+        linkedList.set(newObject, INDEX_0);
+        assertEquals(newObject, linkedList.get(INDEX_0));
     }
 
     @Test
     void clear() {
-        var expectedSize = 2;
-        var firstExpectedObject = 1;
-        var secondExpectedObject = 2;
-        linkedList.add(firstExpectedObject);
-        linkedList.add(secondExpectedObject);
-        assertEquals(firstExpectedObject, linkedList.get(0));
-        assertEquals(secondExpectedObject, linkedList.get(1));
-        assertEquals(expectedSize, linkedList.size());
+        populateList(EXPECTED_SIZE_2, linkedList);
+        assertEquals(EXPECTED_INTEGER_1, linkedList.get(0));
+        assertEquals(EXPECTED_INTEGER_2, linkedList.get(1));
+        assertEquals(EXPECTED_SIZE_2, linkedList.size());
         linkedList.clear();
-        assertEquals(0, linkedList.size());
+        assertEquals(EXPECTED_SIZE_0, linkedList.size());
         assertThrows(IndexOutOfBoundsException.class, () -> linkedList.get(0));
         assertThrows(IndexOutOfBoundsException.class, () -> linkedList.get(1));
     }
@@ -150,57 +158,46 @@ class LinkedListTest {
 
     @Test
     void contains() {
-        var expectedObject = 1;
-        linkedList.add(expectedObject);
-        assertTrue(linkedList.contains(expectedObject));
+        populateList(EXPECTED_SIZE_1, linkedList);
+        assertTrue(linkedList.contains(EXPECTED_INTEGER_1));
     }
 
     @Test
     void indexOf() {
-        var expectedIndex = 1;
-        var expectedObject = 1;
-        linkedList.add(2);
-        linkedList.add(expectedObject);
-        linkedList.add(3);
-        linkedList.add(expectedObject);
-        linkedList.add(4);
-        assertEquals(expectedIndex, linkedList.indexOf(expectedObject));
+        populateList(EXPECTED_SIZE_5, linkedList);
+        linkedList.add(EXPECTED_INTEGER_20, INDEX_1);
+        linkedList.add(EXPECTED_INTEGER_20, INDEX_3);
+        assertEquals(INDEX_1, linkedList.indexOf(EXPECTED_INTEGER_20));
     }
 
     @Test
     void indexOfWithOneElement() {
-        var expectedIndex = 0;
-        var expectedObject = 1;
-        linkedList.add(expectedObject);
-        assertEquals(expectedIndex, linkedList.indexOf(expectedObject));
+        populateList(EXPECTED_SIZE_1, linkedList);
+        assertEquals(INDEX_0, linkedList.indexOf(EXPECTED_SIZE_1));
     }
 
     @Test
     void lastIndexOf() {
-        var expectedIndex = 3;
-        var expectedObject = 1;
-        linkedList.add(2);
-        linkedList.add(expectedObject);
-        linkedList.add(3);
-        linkedList.add(expectedObject);
-        linkedList.add(4);
-        assertEquals(expectedIndex, linkedList.lastIndexOf(expectedObject));
+        populateList(EXPECTED_SIZE_5, linkedList);
+        linkedList.add(EXPECTED_INTEGER_20, INDEX_1);
+        linkedList.add(EXPECTED_INTEGER_20, INDEX_3);
+        assertEquals(INDEX_3, linkedList.lastIndexOf(EXPECTED_INTEGER_20));
     }
 
     @Test
     void should_returnObjects_when_callNext() {
-        prepareListWithFiveElements();
+        populateList(EXPECTED_SIZE_5, linkedList);
         var iterator = linkedList.iterator();
-        assertEquals(1, iterator.next());
-        assertEquals(2, iterator.next());
-        assertEquals(3, iterator.next());
-        assertEquals(4, iterator.next());
-        assertEquals(5, iterator.next());
+        assertEquals(EXPECTED_INTEGER_1, iterator.next());
+        assertEquals(EXPECTED_INTEGER_2, iterator.next());
+        assertEquals(EXPECTED_INTEGER_3, iterator.next());
+        assertEquals(EXPECTED_INTEGER_4, iterator.next());
+        assertEquals(EXPECTED_INTEGER_5, iterator.next());
     }
 
     @Test
     void should_returnTrue_when_callHasNext() {
-        prepareListWithFiveElements();
+        populateList(EXPECTED_SIZE_5, linkedList);
         var iterator = linkedList.iterator();
         assertTrue(iterator.hasNext());
         iterator.next();
@@ -215,7 +212,7 @@ class LinkedListTest {
 
     @Test
     void should_returnFalse_when_callHasNextAfterLastElement() {
-        prepareListWithFiveElements();
+        populateList(EXPECTED_SIZE_5, linkedList);
         var iterator = linkedList.iterator();
         iterator.next();
         iterator.next();
@@ -227,7 +224,7 @@ class LinkedListTest {
 
     @Test
     void should_throwNoSuchElementException_when_callNextAfterLastElement() {
-        prepareListWithFiveElements();
+        populateList(EXPECTED_SIZE_5, linkedList);
         var iterator = linkedList.iterator();
         iterator.next();
         iterator.next();
@@ -239,7 +236,7 @@ class LinkedListTest {
 
     @Test
     void should_removeAllObjectsFromList_when_callRemove() {
-        prepareListWithFiveElements();
+        populateList(EXPECTED_SIZE_5, linkedList);
         var iterator = linkedList.iterator();
         iterator.next();
         iterator.remove();
@@ -251,21 +248,13 @@ class LinkedListTest {
         iterator.remove();
         iterator.next();
         iterator.remove();
-        assertEquals(0, linkedList.size());
+        assertEquals(INDEX_0, linkedList.size());
     }
 
     @Test
     void should_throwIllegalStateException_when_callRemoveBeforeNext() {
-        prepareListWithFiveElements();
+        populateList(EXPECTED_SIZE_5, linkedList);
         var iterator = linkedList.iterator();
         assertThrows(IllegalStateException.class, iterator::remove);
-    }
-
-    void prepareListWithFiveElements() {
-        linkedList.add(1);
-        linkedList.add(2);
-        linkedList.add(3);
-        linkedList.add(4);
-        linkedList.add(5);
     }
 }

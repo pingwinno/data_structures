@@ -3,180 +3,146 @@ package com.study.datastructures.list;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
 import java.util.NoSuchElementException;
 
-import static com.study.tools.TestTools.getPrivateField;
-import static com.study.tools.TestTools.setPrivateField;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static com.study.datastructures.tools.CollectionUtil.populateList;
+import static com.study.datastructures.tools.Constants.EXPECTED_INTEGER_1;
+import static com.study.datastructures.tools.Constants.EXPECTED_INTEGER_2;
+import static com.study.datastructures.tools.Constants.EXPECTED_INTEGER_20;
+import static com.study.datastructures.tools.Constants.EXPECTED_INTEGER_3;
+import static com.study.datastructures.tools.Constants.EXPECTED_INTEGER_4;
+import static com.study.datastructures.tools.Constants.EXPECTED_INTEGER_5;
+import static com.study.datastructures.tools.Constants.EXPECTED_SIZE_0;
+import static com.study.datastructures.tools.Constants.EXPECTED_SIZE_1;
+import static com.study.datastructures.tools.Constants.EXPECTED_SIZE_2;
+import static com.study.datastructures.tools.Constants.EXPECTED_SIZE_3;
+import static com.study.datastructures.tools.Constants.EXPECTED_SIZE_5;
+import static com.study.datastructures.tools.Constants.INDEX_0;
+import static com.study.datastructures.tools.Constants.INDEX_1;
+import static com.study.datastructures.tools.Constants.INDEX_2;
+import static com.study.datastructures.tools.Constants.INDEX_3;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ArrayListTest {
 
-    private static final String ARRAY_FIELD_NAME = "array";
-    private static final String SIZE_FIELD_NAME = "size";
-    private static final String CURRENT_CAPACITY_FIELD_NAME = "currentCapacity";
-
-    private ArrayList arrayList;
+    private ArrayList<Integer> arrayList;
 
     @BeforeEach
     void init() {
-        arrayList = new ArrayList();
+        arrayList = new ArrayList<>();
     }
 
     @Test
     void addOneElement() {
-        var expectedObject = new Object();
-        var expectedSize = 1;
-        arrayList.add(expectedObject);
-        var array = (Object[]) getPrivateField(arrayList, ARRAY_FIELD_NAME);
-        var arraySize = (int) getPrivateField(arrayList, SIZE_FIELD_NAME);
-        assertEquals(expectedSize, arraySize);
-        assertEquals(expectedObject, array[0]);
-        assertNull(array[1]);
+        populateList(EXPECTED_SIZE_1, arrayList);
+        assertEquals(EXPECTED_INTEGER_1, arrayList.get(INDEX_0));
+        assertEquals(EXPECTED_SIZE_1, arrayList.size());
     }
 
     @Test
-    void addTwoElements() {
-        var firstExpectedObject = new Object();
-        var secondExpectedObject = new Object();
-        var expectedSize = 2;
-        arrayList.add(firstExpectedObject);
-        arrayList.add(secondExpectedObject);
-        var array = (Object[]) getPrivateField(arrayList, ARRAY_FIELD_NAME);
-        var arraySize = (int) getPrivateField(arrayList, SIZE_FIELD_NAME);
-        assertEquals(expectedSize, arraySize);
-        assertEquals(firstExpectedObject, array[0]);
-        assertEquals(secondExpectedObject, array[1]);
-        assertNull(array[2]);
+    void addMultipleElements() {
+        populateList(EXPECTED_SIZE_2, arrayList);
+        assertEquals(EXPECTED_INTEGER_1, arrayList.get(INDEX_0));
+        assertEquals(EXPECTED_INTEGER_2, arrayList.get(INDEX_1));
+        assertEquals(EXPECTED_SIZE_2, arrayList.size());
     }
 
     @Test
-    void addByIndex() {
-        var lastObject = 4;
-        var indexOfNewObject = 3;
-        for (int i = 0; i <= lastObject; i++) {
-            arrayList.add(i);
-        }
-        var expectedObject = 20;
-        var expectedSize = 6;
-        arrayList.add(expectedObject, indexOfNewObject);
-        var array = (Object[]) getPrivateField(arrayList, ARRAY_FIELD_NAME);
-        var arraySize = (int) getPrivateField(arrayList, SIZE_FIELD_NAME);
-        assertEquals(expectedSize, arraySize);
-        assertEquals(expectedObject, array[indexOfNewObject]);
-        assertEquals(lastObject, array[lastObject]);
+    void addMultipleElementsByIndexToListTail() {
+        populateList(EXPECTED_SIZE_1, arrayList);
+        arrayList.add(EXPECTED_INTEGER_2, INDEX_1);
+        assertEquals(EXPECTED_INTEGER_1, arrayList.get(INDEX_0));
+        assertEquals(EXPECTED_INTEGER_2, arrayList.get(INDEX_1));
+        assertEquals(EXPECTED_SIZE_2, arrayList.size());
     }
 
     @Test
-    void addByIndexThrowException() {
-        assertThrows(IndexOutOfBoundsException.class, () -> arrayList.add(new Object(), 3));
+    void addMultipleElementsByIndex() {
+        populateList(EXPECTED_SIZE_2, arrayList);
+        assertEquals(EXPECTED_INTEGER_1, arrayList.get(INDEX_0));
+        assertEquals(EXPECTED_INTEGER_2, arrayList.get(INDEX_1));
+        arrayList.add(EXPECTED_SIZE_3, INDEX_1);
+        assertEquals(EXPECTED_INTEGER_1, arrayList.get(INDEX_0));
+        assertEquals(EXPECTED_SIZE_3, arrayList.get(INDEX_1));
+        assertEquals(EXPECTED_INTEGER_2, arrayList.get(INDEX_2));
+        assertEquals(EXPECTED_SIZE_3, arrayList.size());
     }
 
     @Test
-    void removeFromArrayWithSixElements() {
-        Object[] injectedArray = {1, 2, 3, 4, 5, 6};
-        injectArray(injectedArray);
-        var expectedObject = 4;
-        var targetIndex = 3;
-        var removedObject = arrayList.remove(targetIndex);
-        var array = (Object[]) getPrivateField(arrayList, ARRAY_FIELD_NAME);
-        var arraySize = (int) getPrivateField(arrayList, SIZE_FIELD_NAME);
-        assertEquals(expectedObject, removedObject);
-        assertNotEquals(expectedObject, array[targetIndex]);
-        assertEquals(injectedArray.length - 1, arraySize);
+    void addElementsByIndexWithOutOutBoundsException() {
+        assertThrows(IndexOutOfBoundsException.class, () -> arrayList.add(1, 10));
     }
 
     @Test
-    void removeFromArrayWithOneElement() {
-        Object[] injectedArray = {1};
-        injectArray(injectedArray);
-        var expectedObject = 1;
-        var targetIndex = 0;
-        var removedObject = arrayList.remove(targetIndex);
-        var array = (Object[]) getPrivateField(arrayList, ARRAY_FIELD_NAME);
-        var arraySize = (int) getPrivateField(arrayList, SIZE_FIELD_NAME);
-        assertEquals(expectedObject, removedObject);
-        assertNull(array[targetIndex]);
-        assertEquals(0, arraySize);
+    void remove() {
+        populateList(EXPECTED_SIZE_1, arrayList);
+        assertEquals(EXPECTED_INTEGER_1, arrayList.get(INDEX_0));
+        assertEquals(EXPECTED_INTEGER_1, arrayList.remove(INDEX_0));
+        assertThrows(IndexOutOfBoundsException.class, () -> arrayList.get(INDEX_0));
+        assertEquals(EXPECTED_SIZE_0, arrayList.size());
     }
 
     @Test
-    void removeFirstElementFromArrayWithTwoElement() {
-        Object[] injectedArray = {1, 2};
-        injectArray(injectedArray);
-        var firstExpectedObject = 1;
-        var secondExpectedObject = 2;
-        var targetIndex = 0;
-        var removedObject = arrayList.remove(targetIndex);
-        var array = (Object[]) getPrivateField(arrayList, ARRAY_FIELD_NAME);
-        var arraySize = (int) getPrivateField(arrayList, SIZE_FIELD_NAME);
-        assertEquals(firstExpectedObject, removedObject);
-        assertEquals(secondExpectedObject, array[targetIndex]);
-        assertEquals(1, arraySize);
+    void removeHead() {
+        populateList(EXPECTED_SIZE_3, arrayList);
+        assertEquals(EXPECTED_INTEGER_1, arrayList.get(INDEX_0));
+        assertEquals(EXPECTED_INTEGER_1, arrayList.remove(INDEX_0));
+        assertEquals(EXPECTED_INTEGER_2, arrayList.get(INDEX_0));
+        assertEquals(EXPECTED_SIZE_2, arrayList.size());
     }
 
     @Test
-    void removeThrowException() {
-        assertThrows(IndexOutOfBoundsException.class, () -> arrayList.remove(0));
+    void removeTail() {
+        populateList(EXPECTED_SIZE_3, arrayList);
+        assertEquals(EXPECTED_INTEGER_3, arrayList.get(INDEX_2));
+        assertEquals(EXPECTED_INTEGER_3, arrayList.remove(INDEX_2));
+        assertEquals(EXPECTED_INTEGER_2, arrayList.get(INDEX_1));
+        assertEquals(EXPECTED_SIZE_2, arrayList.size());
     }
 
     @Test
-    void get() {
-        var expectedObject = new Object();
-        var array = (Object[]) getPrivateField(arrayList, ARRAY_FIELD_NAME);
-        var arraySize = 1;
-        array[0] = expectedObject;
-        injectArray(array, arraySize);
-        assertEquals(expectedObject, arrayList.get(0));
+    void removeWithMultipleElements() {
+        populateList(EXPECTED_SIZE_3, arrayList);
+        assertEquals(EXPECTED_INTEGER_2, arrayList.get(EXPECTED_SIZE_1));
+        assertEquals(EXPECTED_INTEGER_2, arrayList.remove(EXPECTED_SIZE_1));
+        assertEquals(EXPECTED_SIZE_2, arrayList.size());
+        assertEquals(EXPECTED_INTEGER_1, arrayList.get(EXPECTED_SIZE_0));
+        assertEquals(EXPECTED_INTEGER_3, arrayList.get(EXPECTED_SIZE_1));
     }
 
     @Test
-    void getThrowException() {
-        assertThrows(IndexOutOfBoundsException.class, () -> arrayList.get(0));
+    void removeWithOutOutBoundsException() {
+        assertThrows(IndexOutOfBoundsException.class, () -> arrayList.remove(INDEX_0));
+    }
+
+    @Test
+    void getWithOutOutBoundsException() {
+        assertThrows(IndexOutOfBoundsException.class, () -> arrayList.get(INDEX_0));
     }
 
     @Test
     void set() {
-        Object[] injectedArray = {1, 2, 3, 4, 5, 6};
-        var expectedObject = 4;
-        var expectedIndex = 3;
-        var initialSize = injectedArray.length;
-        injectArray(injectedArray);
-        arrayList.set(expectedObject, expectedIndex);
-        var array = (Object[]) getPrivateField(arrayList, ARRAY_FIELD_NAME);
-        var arraySize = (int) getPrivateField(arrayList, SIZE_FIELD_NAME);
-        assertEquals(expectedObject, array[expectedIndex]);
-        assertEquals(initialSize, arraySize);
-    }
-
-    @Test
-    void setThrowException() {
-        assertThrows(IndexOutOfBoundsException.class, () -> arrayList.set(new Object(), 3));
+        var oldObject = EXPECTED_INTEGER_1;
+        arrayList.add(oldObject);
+        assertEquals(oldObject, arrayList.get(INDEX_0));
+        var newObject = EXPECTED_INTEGER_2;
+        arrayList.set(newObject, INDEX_0);
+        assertEquals(newObject, arrayList.get(INDEX_0));
     }
 
     @Test
     void clear() {
-        Object[] injectedArray = {1, 2, 3, 4, 5, 6};
-        injectArray(injectedArray);
-        var emptyArray = new Object[6];
+        populateList(EXPECTED_SIZE_2, arrayList);
+        assertEquals(EXPECTED_INTEGER_1, arrayList.get(0));
+        assertEquals(EXPECTED_INTEGER_2, arrayList.get(1));
+        assertEquals(EXPECTED_SIZE_2, arrayList.size());
         arrayList.clear();
-        var array = (Object[]) getPrivateField(arrayList, ARRAY_FIELD_NAME);
-        var arraySize = (int) getPrivateField(arrayList, SIZE_FIELD_NAME);
-        assertArrayEquals(emptyArray, array);
-        assertEquals(0, arraySize);
-    }
-
-    @Test
-    void size() {
-        var expectedSize = 1;
-        setPrivateField(arrayList, SIZE_FIELD_NAME, expectedSize);
-        assertEquals(expectedSize, arrayList.size());
+        assertEquals(EXPECTED_SIZE_0, arrayList.size());
+        assertThrows(IndexOutOfBoundsException.class, () -> arrayList.get(0));
+        assertThrows(IndexOutOfBoundsException.class, () -> arrayList.get(1));
     }
 
     @Test
@@ -186,97 +152,52 @@ class ArrayListTest {
 
     @Test
     void isNotEmpty() {
-        var arraySize = 1;
-        setPrivateField(arrayList, SIZE_FIELD_NAME, arraySize);
+        arrayList.add(1);
         assertFalse(arrayList.isEmpty());
     }
 
     @Test
     void contains() {
-        Object[] injectedArray = {1, 2, 3, 4, 5, 6};
-        injectArray(injectedArray);
-        var targetElement = 4;
-        assertTrue(arrayList.contains(targetElement));
+        populateList(EXPECTED_SIZE_1, arrayList);
+        assertTrue(arrayList.contains(EXPECTED_INTEGER_1));
     }
 
     @Test
-    void containsNull() {
-        Object[] injectedArray = {1, 2, 3, null, 5, 6};
-        injectArray(injectedArray);
-        Object targetElement = null;
-        assertTrue(arrayList.contains(targetElement));
+    void indexOf() {
+        populateList(EXPECTED_SIZE_5, arrayList);
+        arrayList.add(EXPECTED_INTEGER_20, INDEX_1);
+        arrayList.add(EXPECTED_INTEGER_20, INDEX_3);
+        assertEquals(INDEX_1, arrayList.indexOf(EXPECTED_INTEGER_20));
     }
 
     @Test
-    void notContains() {
-        Object[] injectedArray = {1, 2, 3, 5, 5, 6};
-        injectArray(injectedArray);
-        var targetElement = 4;
-        assertFalse(arrayList.contains(targetElement));
-    }
-
-    @Test
-    void indexOfExistingElement() {
-        Object[] injectedArray = {1, 2, 3, 4, 5, 6};
-        injectArray(injectedArray);
-        var targetElement = 4;
-        var expectedIndex = 3;
-        assertEquals(expectedIndex, arrayList.indexOf(targetElement));
-    }
-
-    @Test
-    void indexOfNonExistingElement() {
-        var targetElement = 4;
-        var expectedIndex = -1;
-        assertEquals(expectedIndex, arrayList.indexOf(targetElement));
+    void indexOfWithOneElement() {
+        populateList(EXPECTED_SIZE_1, arrayList);
+        assertEquals(INDEX_0, arrayList.indexOf(EXPECTED_SIZE_1));
     }
 
     @Test
     void lastIndexOf() {
-        Object[] injectedArray = {1, 2, 3, 4, 5, 6};
-        injectArray(injectedArray);
-        var targetElement = 2;
-        var expectedIndex = 1;
-        assertEquals(expectedIndex, arrayList.lastIndexOf(targetElement));
-    }
-
-    @Test
-    void checkToString() {
-        Object[] injectedArray = {1, 2, 3, 4, 5, 6};
-        injectArray(injectedArray, 3);
-        var expectedString = Arrays.toString(Arrays.copyOf(injectedArray, 3));
-        assertEquals(expectedString, arrayList.toString());
-    }
-
-    @Test
-    void expandArray() {
-        var initialArraySize = 100;
-        var valuesArray = new Object[150];
-        Arrays.fill(valuesArray, new Object());
-        var array = (Object[]) getPrivateField(arrayList, ARRAY_FIELD_NAME);
-        assertEquals(initialArraySize, array.length);
-        Arrays.stream(valuesArray).forEach(e -> arrayList.add(e));
-        var expectedArraySize = 200;
-        array = (Object[]) getPrivateField(arrayList, ARRAY_FIELD_NAME);
-        assertEquals(expectedArraySize, array.length);
-        var arrayCapacity = (int) getPrivateField(arrayList, CURRENT_CAPACITY_FIELD_NAME);
-        assertEquals(expectedArraySize, arrayCapacity);
+        populateList(EXPECTED_SIZE_5, arrayList);
+        arrayList.add(EXPECTED_INTEGER_20, INDEX_1);
+        arrayList.add(EXPECTED_INTEGER_20, INDEX_3);
+        assertEquals(INDEX_3, arrayList.lastIndexOf(EXPECTED_INTEGER_20));
     }
 
     @Test
     void should_returnObjects_when_callNext() {
-        prepareListWithFiveElements();
+        populateList(EXPECTED_SIZE_5, arrayList);
         var iterator = arrayList.iterator();
-        assertEquals(1, iterator.next());
-        assertEquals(2, iterator.next());
-        assertEquals(3, iterator.next());
-        assertEquals(4, iterator.next());
-        assertEquals(5, iterator.next());
+        assertEquals(EXPECTED_INTEGER_1, iterator.next());
+        assertEquals(EXPECTED_INTEGER_2, iterator.next());
+        assertEquals(EXPECTED_INTEGER_3, iterator.next());
+        assertEquals(EXPECTED_INTEGER_4, iterator.next());
+        assertEquals(EXPECTED_INTEGER_5, iterator.next());
     }
 
     @Test
     void should_returnTrue_when_callHasNext() {
-        prepareListWithFiveElements();
+        populateList(EXPECTED_SIZE_5, arrayList);
         var iterator = arrayList.iterator();
         assertTrue(iterator.hasNext());
         iterator.next();
@@ -291,7 +212,7 @@ class ArrayListTest {
 
     @Test
     void should_returnFalse_when_callHasNextAfterLastElement() {
-        prepareListWithFiveElements();
+        populateList(EXPECTED_SIZE_5, arrayList);
         var iterator = arrayList.iterator();
         iterator.next();
         iterator.next();
@@ -303,7 +224,7 @@ class ArrayListTest {
 
     @Test
     void should_throwNoSuchElementException_when_callNextAfterLastElement() {
-        prepareListWithFiveElements();
+        populateList(EXPECTED_SIZE_5, arrayList);
         var iterator = arrayList.iterator();
         iterator.next();
         iterator.next();
@@ -315,43 +236,25 @@ class ArrayListTest {
 
     @Test
     void should_removeAllObjectsFromList_when_callRemove() {
-        prepareListWithFiveElements();
+        populateList(EXPECTED_SIZE_5, arrayList);
         var iterator = arrayList.iterator();
-        assertEquals(1, iterator.next());
+        iterator.next();
         iterator.remove();
-        assertEquals(2, iterator.next());
+        iterator.next();
         iterator.remove();
-        assertEquals(3, iterator.next());
+        iterator.next();
         iterator.remove();
-        assertEquals(4, iterator.next());
+        iterator.next();
         iterator.remove();
-        assertEquals(5, iterator.next());
+        iterator.next();
         iterator.remove();
-        assertEquals(0, arrayList.size());
+        assertEquals(INDEX_0, arrayList.size());
     }
 
     @Test
     void should_throwIllegalStateException_when_callRemoveBeforeNext() {
-        prepareListWithFiveElements();
+        populateList(EXPECTED_SIZE_5, arrayList);
         var iterator = arrayList.iterator();
         assertThrows(IllegalStateException.class, iterator::remove);
     }
-
-    void prepareListWithFiveElements() {
-        arrayList.add(1);
-        arrayList.add(2);
-        arrayList.add(3);
-        arrayList.add(4);
-        arrayList.add(5);
-    }
-
-    private void injectArray(Object[] injectedArray) {
-        injectArray(injectedArray, injectedArray.length);
-    }
-
-    private void injectArray(Object[] injectedArray, int size) {
-        setPrivateField(arrayList, ARRAY_FIELD_NAME, injectedArray);
-        setPrivateField(arrayList, SIZE_FIELD_NAME, size);
-    }
-
 }

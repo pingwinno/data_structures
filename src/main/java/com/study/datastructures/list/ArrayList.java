@@ -121,7 +121,7 @@ public class ArrayList<T> implements List<T>, Iterable<T> {
 
     private void moveElementsForAdd(int index) {
         if (size - index >= 0) {
-            System.arraycopy(array, index + 1, array, index + 2, size - index);
+            System.arraycopy(array, index, array, index + 1, size - index);
         }
     }
 
