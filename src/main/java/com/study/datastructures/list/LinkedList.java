@@ -175,7 +175,7 @@ public class LinkedList<T> implements List<T>, Iterable<T> {
         private Node<T> nextNode;
         private T value;
 
-        public Node(T value) {
+        private Node(T value) {
             this.value = value;
         }
     }

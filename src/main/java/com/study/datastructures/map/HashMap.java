@@ -8,7 +8,7 @@ import java.util.Objects;
 public class HashMap<K, V> implements Map<K, V> {
 
     private static final int INITIAL_CAPACITY = 16;
-    private final List<Entry<K, V>>[] buckets;
+    private List<Entry<K, V>>[] buckets;
     private int size;
 
     public HashMap() {
@@ -16,14 +16,14 @@ public class HashMap<K, V> implements Map<K, V> {
     }
 
     public HashMap(int bucketsCapacity) {
-        buckets = (List<Entry<K, V>>[]) new List[bucketsCapacity];
-        for (int i = 0; i < buckets.length; i++) {
-            buckets[i] = new LinkedList<>();
-        }
+        initMap(bucketsCapacity);
     }
 
     @Override
     public V put(K key, V value) {
+        if (size >= buckets.length * 0.75) {
+            expandBucketArray();
+        }
         var entry = findEntryByKey(key);
         if (entry == null) {
             getBucketByKey(key).add(new Entry<>(key, value));
@@ -57,6 +57,10 @@ public class HashMap<K, V> implements Map<K, V> {
         return entry == null ? null : entry.value;
     }
 
+    int bucketsSize() {
+        return buckets.length;
+    }
+
     private Entry<K, V> findEntryByKey(K key) {
         var bucket = getBucketByKey(key);
         for (int i = 0; i < bucket.size(); i++) {
@@ -82,6 +86,24 @@ public class HashMap<K, V> implements Map<K, V> {
 
     private List<Entry<K, V>> getBucketByKey(K key) {
         return buckets[(buckets.length - 1) % key.hashCode()];
+    }
+
+    private void expandBucketArray() {
+        var oldBuckets = buckets;
+        initMap(oldBuckets.length * 2);
+        for (List<Entry<K, V>> bucket : oldBuckets) {
+            for (Entry<K, V> element : bucket) {
+                put(element.key, element.value);
+            }
+        }
+    }
+
+    private void initMap(int capacity) {
+        buckets = (List<Entry<K, V>>[]) new List[capacity];
+        for (int i = 0; i < buckets.length; i++) {
+            buckets[i] = new LinkedList<>();
+        }
+        size = 0;
     }
 
     private static class Entry<K, V> {

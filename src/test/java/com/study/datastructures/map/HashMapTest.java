@@ -3,6 +3,8 @@ package com.study.datastructures.map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Random;
+
 import static com.study.datastructures.tools.CollectionUtil.populateHashMap;
 import static com.study.datastructures.tools.Constants.EXPECTED_INTEGER_1;
 import static com.study.datastructures.tools.Constants.EXPECTED_INTEGER_2;
@@ -110,5 +112,14 @@ class HashMapTest {
         populateHashMap(1, hashMap);
 
         assertFalse(hashMap.containsKey(KEY_2));
+    }
+
+    @Test
+    void should_expandBucketsArray_when_reachThreshold() {
+        for (int i = 0; i < 15; i++) {
+            hashMap.put(String.valueOf(new Random().nextInt()), 1);
+        }
+        var expectedSize = 32;
+        assertEquals(expectedSize, hashMap.bucketsSize());
     }
 }
