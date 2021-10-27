@@ -9,7 +9,6 @@ import java.util.StringJoiner;
 public class ArrayList<T> implements List<T>, Iterable<T> {
 
     private static final int INITIAL_CAPACITY = 100;
-    private int currentCapacity;
     private int size = 0;
     private T[] array;
 
@@ -19,7 +18,6 @@ public class ArrayList<T> implements List<T>, Iterable<T> {
 
     public ArrayList(int size) {
         array = (T[]) new Object[size];
-        currentCapacity = array.length;
     }
 
     @Override
@@ -29,14 +27,14 @@ public class ArrayList<T> implements List<T>, Iterable<T> {
 
     @Override
     public void add(T value, int index) {
-        if (index > size) {
+        if (index < 0 || index > size) {
             throw new IndexOutOfBoundsException("Can't add new element. Index: " + index + " is bigger than size: " + size);
         }
         if (isExpansionNeeded()) {
             expandArray();
         }
-        if (index < size) {
-            moveElementsForAdd(index);
+        if (size != index) {
+            System.arraycopy(array, index, array, index + 1, size - index);
         }
         array[index] = value;
         size++;
@@ -44,25 +42,23 @@ public class ArrayList<T> implements List<T>, Iterable<T> {
 
     @Override
     public T remove(int index) {
-        isIndexValid(index);
+        validateIndex(index);
         var temp = array[index];
-        array[index] = null;
-
-        moveElementsForRemove(index);
-
+        System.arraycopy(array, index + 1, array, index, size - index - 1);
         size--;
+        array[size] = null;
         return temp;
     }
 
     @Override
     public T get(int index) {
-        isIndexValid(index);
+        validateIndex(index);
         return array[index];
     }
 
     @Override
     public T set(T value, int index) {
-        isIndexValid(index);
+        validateIndex(index);
         var temp = array[index];
         array[index] = value;
         return temp;
@@ -70,7 +66,8 @@ public class ArrayList<T> implements List<T>, Iterable<T> {
 
     @Override
     public void clear() {
-        clearArray();
+        Arrays.fill(array, 0, size, null);
+        size = 0;
     }
 
     @Override
@@ -109,28 +106,18 @@ public class ArrayList<T> implements List<T>, Iterable<T> {
     }
 
     private boolean isExpansionNeeded() {
-        return currentCapacity <= size;
+        return array.length == size;
     }
 
     private void expandArray() {
-        var newArray = (T[]) new Object[currentCapacity = currentCapacity * 2];
+        var newArray = (T[]) new Object[array.length * 2];
         System.arraycopy(newArray, 0, array, 0, size);
         array = newArray;
 
     }
 
-    private void moveElementsForAdd(int index) {
-        if (size - index >= 0) {
-            System.arraycopy(array, index, array, index + 1, size - index);
-        }
-    }
-
-    private void moveElementsForRemove(int index) {
-        System.arraycopy(array, index + 1, array, index, size - index - 1);
-    }
-
-    private void isIndexValid(int index) {
-        if (index >= size) {
+    private void validateIndex(int index) {
+        if (index < 0 || index >= size) {
             throw new IndexOutOfBoundsException("index: " + index + " out of list size:" + size);
         }
     }
@@ -142,11 +129,6 @@ public class ArrayList<T> implements List<T>, Iterable<T> {
             stringJoiner.add(String.valueOf(array[i]));
         }
         return stringJoiner.toString();
-    }
-
-    private void clearArray() {
-        Arrays.fill(array, 0, size, null);
-        size = 0;
     }
 
     @Override

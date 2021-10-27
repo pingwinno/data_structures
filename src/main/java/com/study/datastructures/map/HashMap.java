@@ -85,7 +85,7 @@ public class HashMap<K, V> implements Map<K, V> {
     }
 
     private List<Entry<K, V>> getBucketByKey(K key) {
-        return buckets[(buckets.length - 1) % key.hashCode()];
+        return buckets[Math.abs((buckets.length - 1) % key.hashCode())];
     }
 
     private void expandBucketArray() {
