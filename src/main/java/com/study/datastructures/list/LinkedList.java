@@ -35,7 +35,7 @@ public class LinkedList<T> implements List<T>, Iterable<T> {
             tail.nextNode = newNode;
             tail = newNode;
         } else {
-            var targetNode = getNodeByIndex(index);
+            var targetNode = getNode(index);
             newNode.previousNode = targetNode.previousNode;
             newNode.nextNode = targetNode;
             targetNode.previousNode.nextNode = newNode;
@@ -46,25 +46,25 @@ public class LinkedList<T> implements List<T>, Iterable<T> {
 
     @Override
     public T remove(int index) {
-        isIndexValid(index);
-        var node = getNodeByIndex(index);
+        validateIndex(index);
+        var node = getNode(index);
         removeNode(node);
         return node.value;
     }
 
     @Override
     public T get(int index) {
-        isIndexValid(index);
+        validateIndex(index);
         if (index == 0) {
             return head.value;
         }
-        return getNodeByIndex(index).value;
+        return getNode(index).value;
     }
 
     @Override
     public T set(T value, int index) {
-        isIndexValid(index);
-        var node = getNodeByIndex(index);
+        validateIndex(index);
+        var node = getNode(index);
         var oldValue = node.value;
         node.value = value;
         return oldValue;
@@ -139,19 +139,19 @@ public class LinkedList<T> implements List<T>, Iterable<T> {
         size--;
     }
 
-    private Node<T> getNodeByIndex(int index) {
+    private Node<T> getNode(int index) {
         Node<T> node = null;
         if (index <= size / 2) {
             node = head;
             int currentIndex = 0;
-            while (node.nextNode != null && currentIndex < index) {
+            while (currentIndex < index) {
                 node = node.nextNode;
                 currentIndex++;
             }
         } else if (index >= size / 2) {
             node = tail;
             int currentIndex = size - 1;
-            while (node.previousNode != null && currentIndex > index) {
+            while (currentIndex > index) {
                 node = node.previousNode;
                 currentIndex--;
             }
@@ -159,8 +159,8 @@ public class LinkedList<T> implements List<T>, Iterable<T> {
         return node;
     }
 
-    private void isIndexValid(int index) {
-        if (index >= size) {
+    private void validateIndex(int index) {
+        if (index < 0 || index >= size) {
             throw new IndexOutOfBoundsException("index: " + index + " out of list size:" + size);
         }
     }
