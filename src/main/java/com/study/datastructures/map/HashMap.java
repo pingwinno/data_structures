@@ -3,6 +3,9 @@ package com.study.datastructures.map;
 import com.study.datastructures.list.LinkedList;
 import com.study.datastructures.list.List;
 
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 public class HashMap<K, V> implements Map<K, V> {
@@ -85,7 +88,7 @@ public class HashMap<K, V> implements Map<K, V> {
     }
 
     private List<Entry<K, V>> getBucketByKey(K key) {
-        return buckets[Math.abs((buckets.length - 1) % key.hashCode())];
+        return buckets[Math.abs(key.hashCode() % (buckets.length - 1))];
     }
 
     private void expandBucketArray() {
@@ -106,13 +109,59 @@ public class HashMap<K, V> implements Map<K, V> {
         size = 0;
     }
 
-    private static class Entry<K, V> {
-        K key;
-        V value;
+    @Override
+    public Iterator<Map.Entry<K, V>> iterator() {
+        return new MapIterator();
+    }
 
-        public Entry(K key, V value) {
+    private static class Entry<K, V> implements Map.Entry<K, V> {
+        private final K key;
+        private V value;
+
+        private Entry(K key, V value) {
             this.key = key;
             this.value = value;
+        }
+
+        @Override
+        public K key() {
+            return key;
+        }
+
+        @Override
+        public V value() {
+            return value;
+        }
+    }
+
+    private class MapIterator implements Iterator<Map.Entry<K, V>> {
+        private final Iterator<List<Entry<K, V>>> bucketIterator = Arrays.stream(buckets).iterator();
+        private Iterator<Entry<K, V>> currentIterator;
+
+        private MapIterator() {
+            currentIterator = bucketIterator.next().iterator();
+        }
+
+        @Override
+        public boolean hasNext() {
+            while (!currentIterator.hasNext() && bucketIterator.hasNext()) {
+                currentIterator = bucketIterator.next().iterator();
+            }
+            return bucketIterator.hasNext() || currentIterator.hasNext();
+        }
+
+        @Override
+        public Entry<K, V> next() {
+            if (hasNext()) {
+                return currentIterator.next();
+            }
+            throw new NoSuchElementException();
+        }
+
+        @Override
+        public void remove() {
+            currentIterator.remove();
+            size--;
         }
     }
 }
