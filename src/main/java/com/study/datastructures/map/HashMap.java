@@ -1,18 +1,14 @@
 package com.study.datastructures.map;
 
-import com.study.datastructures.list.LinkedList;
-import com.study.datastructures.list.List;
-
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
 public class HashMap<K, V> implements Map<K, V> {
-
     private static final int INITIAL_CAPACITY = 16;
-    private List<Entry<K, V>>[] buckets;
     private int size;
+
+    private Entry<K, V>[] buckets;
 
     public HashMap() {
         this(INITIAL_CAPACITY);
@@ -24,18 +20,30 @@ public class HashMap<K, V> implements Map<K, V> {
 
     @Override
     public V put(K key, V value) {
-        if (size >= buckets.length * 0.75) {
+        if (size == buckets.length * 0.75) {
             expandBucketArray();
         }
-        var entry = findEntryByKey(key);
-        if (entry == null) {
-            getBucketByKey(key).add(new Entry<>(key, value));
+        var bucketIndex = getBucketIndexByHash(key.hashCode());
+        var entry = buckets[bucketIndex];
+        Entry<K, V> previousEntry = null;
+        while (entry != null) {
+            if (Objects.equals(key, entry.key)) {
+                var pldValue = entry.value;
+                entry.value = value;
+                return pldValue;
+            }
+            previousEntry = entry;
+            entry = entry.next;
+        }
+        if (previousEntry != null) {
+            previousEntry.next = new Entry<>(key, key.hashCode(), value);
             size++;
             return value;
         }
-        var oldValue = entry.value;
-        entry.value = value;
-        return oldValue;
+        entry = new Entry<>(key, key.hashCode(), value);
+        buckets[bucketIndex] = entry;
+        size++;
+        return value;
     }
 
     @Override
@@ -65,47 +73,59 @@ public class HashMap<K, V> implements Map<K, V> {
     }
 
     private Entry<K, V> findEntryByKey(K key) {
-        var bucket = getBucketByKey(key);
-        for (int i = 0; i < bucket.size(); i++) {
-            var element = bucket.get(i);
-            if (Objects.equals(key, element.key)) {
-                return element;
+        var bucketIndex = getBucketIndexByHash(key.hashCode());
+        var entry = buckets[bucketIndex];
+        while (entry != null) {
+            if (Objects.equals(key, entry.key)) {
+                return entry;
             }
+            entry = entry.next;
         }
         return null;
     }
 
     private Entry<K, V> removeEntryByKey(K key) {
-        var bucket = getBucketByKey(key);
-        for (int i = 0; i < bucket.size(); i++) {
-            var element = bucket.get(i);
-            if (Objects.equals(key, element.key)) {
+        var bucketIndex = getBucketIndexByHash(key.hashCode());
+        var entry = buckets[bucketIndex];
+        Entry<K, V> previousEntry = null;
+        while (entry != null) {
+            if (Objects.equals(key, entry.key)) {
                 size--;
-                return bucket.remove(i);
+                if (previousEntry != null) {
+                    previousEntry.next = entry.next;
+                    entry.next = null;
+                    return entry;
+                }
+                buckets[bucketIndex] = entry.next;
+                entry.next = null;
+                return entry;
             }
+            previousEntry = entry;
+            entry = entry.next;
         }
         return null;
     }
 
-    private List<Entry<K, V>> getBucketByKey(K key) {
-        return buckets[Math.abs(key.hashCode() % (buckets.length - 1))];
+    private int getBucketIndexByHash(int hash) {
+        return Math.abs(hash % buckets.length);
     }
 
     private void expandBucketArray() {
-        var oldBuckets = buckets;
-        initMap(oldBuckets.length * 2);
-        for (List<Entry<K, V>> bucket : oldBuckets) {
-            for (Entry<K, V> element : bucket) {
-                put(element.key, element.value);
+        var newBuckets = (Entry<K, V>[]) new Entry[buckets.length * 2];
+        var iterator = new MapIterator();
+        while (iterator.hasNext()) {
+            var entry = iterator.next();
+            var bucketIndex = getBucketIndexByHash(entry.hash);
+            if (newBuckets[bucketIndex] != null) {
+                newBuckets[bucketIndex].next = entry;
             }
+            newBuckets[bucketIndex] = entry;
         }
+        buckets = newBuckets;
     }
 
     private void initMap(int capacity) {
-        buckets = (List<Entry<K, V>>[]) new List[capacity];
-        for (int i = 0; i < buckets.length; i++) {
-            buckets[i] = new LinkedList<>();
-        }
+        buckets = (Entry<K, V>[]) new Entry[capacity];
         size = 0;
     }
 
@@ -115,11 +135,15 @@ public class HashMap<K, V> implements Map<K, V> {
     }
 
     private static class Entry<K, V> implements Map.Entry<K, V> {
-        private final K key;
-        private V value;
 
-        private Entry(K key, V value) {
+        private final K key;
+        private final int hash;
+        private V value;
+        private Entry<K, V> next;
+
+        public Entry(K key, int hash, V value) {
             this.key = key;
+            this.hash = hash;
             this.value = value;
         }
 
@@ -135,33 +159,51 @@ public class HashMap<K, V> implements Map<K, V> {
     }
 
     private class MapIterator implements Iterator<Map.Entry<K, V>> {
-        private final Iterator<List<Entry<K, V>>> bucketIterator = Arrays.stream(buckets).iterator();
-        private Iterator<Entry<K, V>> currentIterator;
+        private int currentIndex;
+        private Entry<K, V> currentEntry;
+        private boolean isNextCalled;
 
         private MapIterator() {
-            currentIterator = bucketIterator.next().iterator();
         }
 
         @Override
         public boolean hasNext() {
-            while (!currentIterator.hasNext() && bucketIterator.hasNext()) {
-                currentIterator = bucketIterator.next().iterator();
+            while (currentEntry == null && currentIndex != buckets.length) {
+                currentEntry = buckets[currentIndex];
+                currentIndex++;
             }
-            return bucketIterator.hasNext() || currentIterator.hasNext();
+            return currentEntry != null;
         }
 
         @Override
         public Entry<K, V> next() {
             if (hasNext()) {
-                return currentIterator.next();
+                var entry = currentEntry;
+                currentEntry = currentEntry.next;
+                isNextCalled = true;
+                return entry;
             }
             throw new NoSuchElementException();
         }
 
         @Override
         public void remove() {
-            currentIterator.remove();
-            size--;
+            if (isNextCalled) {
+                Entry<K, V> entryToRemove = buckets[currentIndex - 1];
+                Entry<K, V> previousEntry = null;
+                while (entryToRemove.next != currentEntry) {
+                    previousEntry = entryToRemove;
+                    entryToRemove = entryToRemove.next;
+                }
+                size--;
+                if (previousEntry != null) {
+                    previousEntry.next = entryToRemove.next;
+                    return;
+                }
+                buckets[currentIndex - 1] = null;
+                return;
+            }
+            throw new IllegalStateException("Remove call without next");
         }
     }
 }
